@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор стенки — расчёт штукатурки, покраски и материалов</title>
+    <title>Калькулятор ремонта — стена, пол, потолок, окна и двери</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             background-color: #f8fafc;
             color: #0f172a;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .surface-tab.active {
+            background-color: #ea580c;
+            color: #ffffff;
+            border-color: #ea580c;
         }
         .action-btn.active {
             border-color: #ea580c;
@@ -27,10 +32,10 @@
     <header class="bg-slate-900 text-white py-5 px-4 border-b border-slate-800">
         <div class="max-w-3xl mx-auto flex items-center justify-between gap-3">
             <div>
-                <h1 class="text-xl sm:text-2xl font-black tracking-tight">Калькулятор стенки</h1>
-                <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Введите размер стенки и выберите, что хотите сделать</p>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight">Калькулятор ремонта</h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Стена, пол, потолок, окна и двери — базовый расчёт без лишнего</p>
             </div>
-            <div class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-orange-400 border border-slate-700">
+            <div id="headerBadge" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-orange-400 border border-slate-700">
                 Стена
             </div>
         </div>
@@ -39,31 +44,48 @@
     <!-- ОСНОВНОЙ БЛОК -->
     <main class="max-w-3xl mx-auto w-full px-4 py-6 flex-1 space-y-6">
 
-        <!-- ШАГ 1: РАЗМЕР СТЕНКИ -->
+        <!-- ШАГ 1: ВЫБОР ПОВЕРХНОСТИ И РАЗМЕРЫ -->
         <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
-            <div class="flex items-center justify-between gap-2 mb-4">
-                <h2 class="text-base sm:text-lg font-extrabold text-slate-900">1. Размер стенки</h2>
-                <button type="button" onclick="resetWall()" class="text-xs font-bold text-orange-600 hover:underline cursor-pointer">
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <h2 class="text-base sm:text-lg font-extrabold text-slate-900">1. Что считаем и размер</h2>
+                <button type="button" onclick="resetCurrent()" class="text-xs font-bold text-orange-600 hover:underline cursor-pointer">
                     Сбросить
                 </button>
             </div>
 
+            <!-- Переключатель поверхности -->
+            <div class="grid grid-cols-3 gap-2 mb-5">
+                <button type="button" id="tabWall" onclick="selectSurface('wall')"
+                    class="surface-tab active py-2.5 px-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-extrabold transition cursor-pointer">
+                    Стена
+                </button>
+                <button type="button" id="tabFloor" onclick="selectSurface('floor')"
+                    class="surface-tab py-2.5 px-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-extrabold text-slate-700 bg-white transition cursor-pointer">
+                    Пол
+                </button>
+                <button type="button" id="tabCeiling" onclick="selectSurface('ceiling')"
+                    class="surface-tab py-2.5 px-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-extrabold text-slate-700 bg-white transition cursor-pointer">
+                    Потолок
+                </button>
+            </div>
+
+            <!-- Поля размеров -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label for="wallWidth" class="block text-xs font-bold text-slate-600 mb-1.5">Ширина / длина стенки (м)</label>
-                    <input type="number" id="wallWidth" value="4.0" min="0.1" step="0.1" oninput="calculateWall()"
+                    <label id="lblDimA" for="dimA" class="block text-xs font-bold text-slate-600 mb-1.5">Ширина / длина стенки (м)</label>
+                    <input type="number" id="dimA" value="4.0" min="0.1" step="0.1" oninput="calculate()"
                         class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
                 </div>
                 <div>
-                    <label for="wallHeight" class="block text-xs font-bold text-slate-600 mb-1.5">Высота стенки (м)</label>
-                    <input type="number" id="wallHeight" value="2.7" min="0.1" step="0.05" oninput="calculateWall()"
+                    <label id="lblDimB" for="dimB" class="block text-xs font-bold text-slate-600 mb-1.5">Высота стенки (м)</label>
+                    <input type="number" id="dimB" value="2.7" min="0.1" step="0.05" oninput="calculate()"
                         class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
                 </div>
                 <div>
-                    <label for="wallReserve" class="block text-xs font-bold text-slate-600 mb-1.5">Запас на потери (%)</label>
-                    <select id="wallReserve" onchange="calculateWall()"
+                    <label for="reservePct" class="block text-xs font-bold text-slate-600 mb-1.5">Запас на потери (%)</label>
+                    <select id="reservePct" onchange="calculate()"
                         class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        <option value="0">0%</option>
+                        <option value="0">0% (без запаса)</option>
                         <option value="5">5%</option>
                         <option value="10" selected>10% (обычный запас)</option>
                         <option value="15">15%</option>
@@ -71,56 +93,95 @@
                 </div>
             </div>
 
+            <!-- Блок окон и дверей только для стенки -->
+            <div id="wallOpeningsBox" class="mt-5 pt-4 border-t border-slate-100 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Окна и двери на стенке (не входят в площадь работы)</span>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="addOpening('window')"
+                            class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer">
+                            + Окно
+                        </button>
+                        <button type="button" onclick="addOpening('door')"
+                            class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer">
+                            + Дверь
+                        </button>
+                    </div>
+                </div>
+
+                <div id="openingsContainer" class="space-y-2.5"></div>
+            </div>
+
             <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm">
-                <span class="text-slate-500 font-semibold">Площадь стенки:</span>
+                <span id="areaLabel" class="text-slate-500 font-semibold">Итоговая площадь стенки:</span>
                 <span id="areaDisplay" class="font-black text-slate-900">10.80 м²</span>
             </div>
         </section>
 
-        <!-- ШАГ 2: ЧТО ХОТИМ СДЕЛАТЬ СО СТЕНКОЙ -->
+        <!-- ШАГ 2: ЧТО ДЕЛАЕМ -->
         <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
-            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 mb-4">2. Что делаем со стенкой?</h2>
+            <h2 id="step2Title" class="text-base sm:text-lg font-extrabold text-slate-900 mb-4">2. Что делаем со стенкой?</h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <button type="button" id="btnPlaster" onclick="selectAction('plaster')"
-                    class="action-btn active text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer">
-                    <div class="font-extrabold text-sm sm:text-base text-slate-900">Поштукатурить</div>
-                    <div class="text-xs text-slate-500 mt-1">Выровнять стенку штукатурным раствором</div>
-                </button>
+            <div id="actionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
 
-                <button type="button" id="btnPaint" onclick="selectAction('paint')"
-                    class="action-btn text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer">
-                    <div class="font-extrabold text-sm sm:text-base text-slate-900">Покрасить</div>
-                    <div class="text-xs text-slate-500 mt-1">Покрыть стенку краской в 2 слоя</div>
-                </button>
-            </div>
-
-            <!-- Дополнительный параметр под выбранное действие -->
-            <div id="plasterOptions" class="mt-4 pt-4 border-t border-slate-100">
-                <label for="plasterMm" class="block text-xs font-bold text-slate-600 mb-1.5">Примерная толщина слоя штукатурки (мм)</label>
-                <input type="number" id="plasterMm" value="10" min="1" max="100" step="1" oninput="calculateWall()"
+            <!-- Параметры действий -->
+            <div id="optPlaster" class="hidden mt-4 pt-4 border-t border-slate-100">
+                <label for="plasterMm" class="block text-xs font-bold text-slate-600 mb-1.5">Толщина слоя штукатурки (мм)</label>
+                <input type="number" id="plasterMm" value="10" min="1" max="150" step="1" oninput="calculate()"
                     class="w-full sm:w-56 rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
             </div>
 
-            <div id="paintOptions" class="hidden mt-4 pt-4 border-t border-slate-100">
+            <div id="optScreed" class="hidden mt-4 pt-4 border-t border-slate-100">
+                <label for="screedMm" class="block text-xs font-bold text-slate-600 mb-1.5">Толщина стяжки / наливного пола (мм)</label>
+                <input type="number" id="screedMm" value="40" min="2" max="200" step="1" oninput="calculate()"
+                    class="w-full sm:w-56 rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+            </div>
+
+            <div id="optPutty" class="hidden mt-4 pt-4 border-t border-slate-100">
+                <label for="puttyLayers" class="block text-xs font-bold text-slate-600 mb-1.5">Количество слоёв шпаклёвки</label>
+                <select id="puttyLayers" onchange="calculate()"
+                    class="w-full sm:w-56 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+                    <option value="1">1 слой</option>
+                    <option value="2" selected>2 слоя</option>
+                    <option value="3">3 слоя</option>
+                </select>
+            </div>
+
+            <div id="optPaint" class="hidden mt-4 pt-4 border-t border-slate-100">
                 <label for="paintCoats" class="block text-xs font-bold text-slate-600 mb-1.5">Количество слоёв краски</label>
-                <select id="paintCoats" onchange="calculateWall()"
+                <select id="paintCoats" onchange="calculate()"
                     class="w-full sm:w-56 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
                     <option value="1">1 слой</option>
                     <option value="2" selected>2 слоя (стандарт)</option>
                     <option value="3">3 слоя</option>
                 </select>
             </div>
+
+            <div id="optPrime" class="hidden mt-4 pt-4 border-t border-slate-100">
+                <label for="primeCoats" class="block text-xs font-bold text-slate-600 mb-1.5">Количество слоёв грунтовки</label>
+                <select id="primeCoats" onchange="calculate()"
+                    class="w-full sm:w-56 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+                    <option value="1" selected>1 слой</option>
+                    <option value="2">2 слоя</option>
+                </select>
+            </div>
+
+            <div id="optWallpaper" class="hidden mt-4 pt-4 border-t border-slate-100">
+                <label for="rollArea" class="block text-xs font-bold text-slate-600 mb-1.5">Площадь одного рулона обоев (м²)</label>
+                <input type="number" id="rollArea" value="5.3" min="2" max="20" step="0.1" oninput="calculate()"
+                    class="w-full sm:w-56 rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+            </div>
         </section>
 
         <!-- ШАГ 3: РЕЗУЛЬТАТ -->
         <section class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-lg border border-slate-800">
             <div class="text-xs uppercase tracking-wider font-bold text-orange-400 mb-1">Результат расчёта</div>
-            <h2 id="resultTitle" class="text-xl sm:text-2xl font-black mb-4">Сколько нужно штукатурки</h2>
+            <h2 id="resultTitle" class="text-xl sm:text-2xl font-black mb-4">Сколько нужно материалов</h2>
 
             <div class="bg-slate-800/90 rounded-xl p-4 sm:p-5 border border-slate-700 mb-4">
-                <div class="text-xs text-slate-400 mb-1" id="resultMainLabel">Примерный объём раствора:</div>
-                <div id="resultMainValue" class="text-3xl sm:text-4xl font-black text-orange-400">0 л</div>
+                <div class="text-xs text-slate-400 mb-1" id="resultMainLabel">Основной расчёт:</div>
+                <div id="resultMainValue" class="text-3xl sm:text-4xl font-black text-orange-400">0</div>
+                <div id="resultExtra" class="text-sm font-bold text-amber-300 mt-2"></div>
                 <div id="resultSubNote" class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed"></div>
             </div>
 
@@ -132,79 +193,355 @@
     </main>
 
     <footer class="bg-slate-900 text-slate-400 text-xs py-4 px-4 mt-8 border-t border-slate-800 text-center">
-        Калькулятор стенки — быстрый ориентировочный расчёт материалов
+        Калькулятор ремонта — базовый расчёт по стенам, полу, потолку, окнам и дверям
     </footer>
 
     <script>
+        const SURFACE_ACTIONS = {
+            wall: [
+                { id: 'plaster', title: 'Поштукатурить', desc: 'Выровнять стенку штукатуркой', optId: 'optPlaster' },
+                { id: 'putty', title: 'Зашпаклевать', desc: 'Сгладить под покраску или обои', optId: 'optPutty' },
+                { id: 'paint', title: 'Покрасить', desc: 'Нанести краску в 1–3 слоя', optId: 'optPaint' },
+                { id: 'prime', title: 'Загрунтовать', desc: 'Укрепить основание', optId: 'optPrime' },
+                { id: 'wallpaper', title: 'Поклеить обои', desc: 'Рулоны обоев и клей', optId: 'optWallpaper' },
+                { id: 'tile', title: 'Положить плитку', desc: 'Плитка, клей и затирка', optId: null },
+                { id: 'panels', title: 'Обшить панелями / ПВХ', desc: 'Панели и крепёж/клей', optId: null },
+                { id: 'drywall', title: 'Зашить гипсокартоном', desc: 'Листы ГКЛ', optId: null },
+                { id: 'insulate', title: 'Утеплить стену', desc: 'Утеплитель, клей и сетка', optId: null }
+            ],
+            floor: [
+                { id: 'screed', title: 'Залить стяжку / наливной пол', desc: 'Выровнять пол по толщине', optId: 'optScreed' },
+                { id: 'laminate', title: 'Положить ламинат', desc: 'Ламинат и подложка', optId: null },
+                { id: 'tile', title: 'Положить плитку на пол', desc: 'Плитка, клей и затирка', optId: null },
+                { id: 'linoleum', title: 'Постелить линолеум', desc: 'Рулонный материал', optId: null },
+                { id: 'prime', title: 'Загрунтовать пол', desc: 'Подготовка основания', optId: 'optPrime' }
+            ],
+            ceiling: [
+                { id: 'paint', title: 'Покрасить потолок', desc: 'Краска в 1–3 слоя', optId: 'optPaint' },
+                { id: 'putty', title: 'Зашпаклевать потолок', desc: 'Выравнивание под покраску', optId: 'optPutty' },
+                { id: 'plaster', title: 'Поштукатурить потолок', desc: 'Выравнивающий слой', optId: 'optPlaster' },
+                { id: 'prime', title: 'Загрунтовать потолок', desc: 'Грунтовка перед отделкой', optId: 'optPrime' },
+                { id: 'panels', title: 'Обшить панелями / вагонкой', desc: 'Панели и крепёж', optId: null }
+            ]
+        };
+
+        let currentSurface = 'wall';
         let currentAction = 'plaster';
+        let openings = [];
 
-        function selectAction(action) {
-            currentAction = action;
-            document.getElementById('btnPlaster').className = action === 'plaster'
-                ? 'action-btn active text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer'
-                : 'action-btn text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer';
-            document.getElementById('btnPaint').className = action === 'paint'
-                ? 'action-btn active text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer'
-                : 'action-btn text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer';
-
-            document.getElementById('plasterOptions').classList.toggle('hidden', action !== 'plaster');
-            document.getElementById('paintOptions').classList.toggle('hidden', action !== 'paint');
-
-            calculateWall();
+        function addOpening(type) {
+            const isDoor = type === 'door';
+            openings.push({
+                id: 'op_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
+                type: type,
+                widthM: isDoor ? 0.9 : 1.4,
+                heightM: isDoor ? 2.05 : 1.45
+            });
+            renderOpenings();
+            calculate();
         }
 
-        function resetWall() {
-            document.getElementById('wallWidth').value = 4.0;
-            document.getElementById('wallHeight').value = 2.7;
-            document.getElementById('wallReserve').value = 10;
-            document.getElementById('plasterMm').value = 10;
-            document.getElementById('paintCoats').value = 2;
-            calculateWall();
+        function removeOpening(id) {
+            openings = openings.filter(o => o.id !== id);
+            renderOpenings();
+            calculate();
         }
 
-        function calculateWall() {
-            const w = Math.max(0.1, parseFloat(document.getElementById('wallWidth').value) || 0);
-            const h = Math.max(0.1, parseFloat(document.getElementById('wallHeight').value) || 0);
-            const reservePct = parseFloat(document.getElementById('wallReserve').value) || 0;
+        function updateOpening(id, field, val) {
+            const item = openings.find(o => o.id === id);
+            if (!item) return;
+            item[field] = Math.max(0, parseFloat(val) || 0);
+            calculate();
+        }
 
-            const netArea = w * h;
+        function renderOpenings() {
+            const box = document.getElementById('openingsContainer');
+            if (!openings.length) {
+                box.innerHTML = '<div class="text-xs text-slate-400">Окон и дверей не добавлено — считается вся стенка целиком.</div>';
+                return;
+            }
+
+            box.innerHTML = openings.map((op, idx) => {
+                const label = op.type === 'door' ? `Дверь #${idx + 1}` : `Окно #${idx + 1}`;
+                return `
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                        <span class="text-xs font-extrabold text-slate-800">${label}</span>
+                        <div class="flex items-center gap-2 text-xs">
+                            <label class="text-slate-600 font-semibold">Ширина (м):</label>
+                            <input type="number" value="${op.widthM}" min="0.1" step="0.05"
+                                oninput="updateOpening('${op.id}', 'widthM', this.value)"
+                                class="w-20 rounded-lg border border-slate-300 bg-white px-2 py-1 font-bold text-slate-900">
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <label class="text-slate-600 font-semibold">Высота (м):</label>
+                            <input type="number" value="${op.heightM}" min="0.1" step="0.05"
+                                oninput="updateOpening('${op.id}', 'heightM', this.value)"
+                                class="w-20 rounded-lg border border-slate-300 bg-white px-2 py-1 font-bold text-slate-900">
+                        </div>
+                        <button type="button" onclick="removeOpening('${op.id}')"
+                            class="text-xs font-bold text-red-600 hover:underline cursor-pointer">
+                            Убрать
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectSurface(surface) {
+            currentSurface = surface;
+            ['wall', 'floor', 'ceiling'].forEach(s => {
+                const btn = document.getElementById('tab' + s.charAt(0).toUpperCase() + s.slice(1));
+                btn.className = s === surface
+                    ? 'surface-tab active py-2.5 px-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-extrabold transition cursor-pointer'
+                    : 'surface-tab py-2.5 px-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-extrabold text-slate-700 bg-white transition cursor-pointer';
+            });
+
+            const badgeNames = { wall: 'Стена', floor: 'Пол', ceiling: 'Потолок' };
+            const step2Names = {
+                wall: '2. Что делаем со стенкой?',
+                floor: '2. Что делаем с полом?',
+                ceiling: '2. Что делаем с потолком?'
+            };
+            document.getElementById('headerBadge').textContent = badgeNames[surface];
+            document.getElementById('step2Title').textContent = step2Names[surface];
+            document.getElementById('wallOpeningsBox').classList.toggle('hidden', surface !== 'wall');
+
+            const lblA = document.getElementById('lblDimA');
+            const lblB = document.getElementById('lblDimB');
+            const inpA = document.getElementById('dimA');
+            const inpB = document.getElementById('dimB');
+
+            if (surface === 'wall') {
+                lblA.textContent = 'Ширина / длина стенки (м)';
+                lblB.textContent = 'Высота стенки (м)';
+                inpA.value = '4.0';
+                inpB.value = '2.7';
+            } else {
+                lblA.textContent = surface === 'floor' ? 'Длина пола (м)' : 'Длина потолка (м)';
+                lblB.textContent = surface === 'floor' ? 'Ширина пола (м)' : 'Ширина потолка (м)';
+                inpA.value = '4.5';
+                inpB.value = '3.4';
+            }
+
+            currentAction = SURFACE_ACTIONS[surface][0].id;
+            renderActions();
+            showActionOption(currentAction);
+            calculate();
+        }
+
+        function renderActions() {
+            const list = SURFACE_ACTIONS[currentSurface];
+            document.getElementById('actionsGrid').innerHTML = list.map(act => {
+                const isActive = act.id === currentAction;
+                return `
+                    <button type="button" onclick="selectAction('${act.id}')"
+                        class="action-btn ${isActive ? 'active' : ''} text-left p-3.5 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer">
+                        <div class="font-extrabold text-sm text-slate-900">${act.title}</div>
+                        <div class="text-xs text-slate-500 mt-0.5">${act.desc}</div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function showActionOption(actionId) {
+            const allOpts = ['optPlaster', 'optScreed', 'optPutty', 'optPaint', 'optPrime', 'optWallpaper'];
+            const list = SURFACE_ACTIONS[currentSurface];
+            const found = list.find(a => a.id === actionId);
+            allOpts.forEach(id => {
+                document.getElementById(id).classList.toggle('hidden', !found || found.optId !== id);
+            });
+        }
+
+        function selectAction(actionId) {
+            currentAction = actionId;
+            renderActions();
+            showActionOption(actionId);
+            calculate();
+        }
+
+        function resetCurrent() {
+            openings = [];
+            renderOpenings();
+            if (currentSurface === 'wall') {
+                document.getElementById('dimA').value = '4.0';
+                document.getElementById('dimB').value = '2.7';
+            } else {
+                document.getElementById('dimA').value = '4.5';
+                document.getElementById('dimB').value = '3.4';
+            }
+            document.getElementById('reservePct').value = '10';
+            document.getElementById('plasterMm').value = '10';
+            document.getElementById('screedMm').value = '40';
+            document.getElementById('puttyLayers').value = '2';
+            document.getElementById('paintCoats').value = '2';
+            document.getElementById('primeCoats').value = '1';
+            document.getElementById('rollArea').value = '5.3';
+            calculate();
+        }
+
+        function getNetArea() {
+            const a = Math.max(0.1, parseFloat(document.getElementById('dimA').value) || 0);
+            const b = Math.max(0.1, parseFloat(document.getElementById('dimB').value) || 0);
+            let area = a * b;
+
+            if (currentSurface === 'wall' && openings.length) {
+                const cutArea = openings.reduce((sum, op) => sum + ((op.widthM || 0) * (op.heightM || 0)), 0);
+                area = Math.max(0.2, area - cutArea);
+            }
+            return area;
+        }
+
+        function calculate() {
+            const netArea = getNetArea();
+            const reservePct = parseFloat(document.getElementById('reservePct').value) || 0;
             const totalArea = netArea * (1 + reservePct / 100);
 
+            const areaLabels = {
+                wall: 'Итоговая площадь стенки:',
+                floor: 'Площадь пола:',
+                ceiling: 'Площадь потолка:'
+            };
+            document.getElementById('areaLabel').textContent = areaLabels[currentSurface];
             document.getElementById('areaDisplay').textContent = `${netArea.toFixed(2)} м²`;
+
+            let title = '';
+            let mainLabel = '';
+            let mainValue = '';
+            let extra = '';
+            let subNote = '';
 
             if (currentAction === 'plaster') {
                 const mm = Math.max(1, parseFloat(document.getElementById('plasterMm').value) || 10);
-                // Объём слоя в литрах: площадь (м²) * толщина (м) * 1000 л/м³ = площадь * мм
                 const liters = totalArea * mm;
-                // Ориентировочный вес сухой смеси (~1.1 кг на 1 мм на 1 м²)
                 const kg = totalArea * mm * 1.1;
                 const bags30 = Math.max(1, Math.ceil(kg / 30));
 
-                document.getElementById('resultTitle').textContent = 'Сколько нужно штукатурки';
-                document.getElementById('resultMainLabel').textContent = 'Примерный объём штукатурки (в литрах):';
-                document.getElementById('resultMainValue').textContent = `≈ ${liters.toFixed(1)} л`;
-                document.getElementById('resultSubNote').textContent =
-                    `На стенку ${netArea.toFixed(2)} м² (с запасом ${reservePct}%) при слое ${mm} мм: около ${kg.toFixed(1)} кг сухой смеси (≈ ${bags30} мешк. по 30 кг).`;
-            } else {
+                title = 'Сколько нужно штукатурки';
+                mainLabel = 'Примерный объём штукатурки (в литрах):';
+                mainValue = `≈ ${liters.toFixed(1)} л`;
+                extra = `Сухой смеси: ≈ ${kg.toFixed(1)} кг (≈ ${bags30} мешк. по 30 кг)`;
+                subNote = `Площадь ${netArea.toFixed(2)} м² (с запасом ${reservePct}% = ${totalArea.toFixed(2)} м²), слой ${mm} мм.`;
+            } else if (currentAction === 'screed') {
+                const mm = Math.max(2, parseFloat(document.getElementById('screedMm').value) || 40);
+                const liters = totalArea * mm;
+                const kg = totalArea * mm * 1.8;
+                const bags25 = Math.max(1, Math.ceil(kg / 25));
+
+                title = 'Сколько нужно смеси для пола';
+                mainLabel = 'Примерный объём раствора (в литрах):';
+                mainValue = `≈ ${liters.toFixed(1)} л`;
+                extra = `Сухой смеси: ≈ ${kg.toFixed(1)} кг (≈ ${bags25} мешк. по 25 кг)`;
+                subNote = `Пол ${netArea.toFixed(2)} м² (с запасом ${reservePct}%), толщина ${mm} мм.`;
+            } else if (currentAction === 'putty') {
+                const layers = parseInt(document.getElementById('puttyLayers').value, 10) || 2;
+                const kg = totalArea * 0.75 * layers;
+                const litersApprox = kg * 0.85;
+                const bags20 = Math.max(1, Math.ceil(kg / 20));
+
+                title = 'Сколько нужно шпаклёвки';
+                mainLabel = 'Примерный объём / вес:';
+                mainValue = `≈ ${litersApprox.toFixed(1)} л (или ${kg.toFixed(1)} кг)`;
+                extra = `По мешкам: ≈ ${bags20} шт. по 20 кг`;
+                subNote = `Площадь ${netArea.toFixed(2)} м² (с запасом ${reservePct}%), ${layers} сл.`;
+            } else if (currentAction === 'paint') {
                 const coats = parseInt(document.getElementById('paintCoats').value, 10) || 2;
-                // Средний расход краски ~0.12 л/м² за один слой
                 const liters = totalArea * 0.12 * coats;
 
-                document.getElementById('resultTitle').textContent = 'Сколько нужно краски';
-                document.getElementById('resultMainLabel').textContent = 'Примерный объём краски (в литрах):';
-                document.getElementById('resultMainValue').textContent = `≈ ${liters.toFixed(1)} л`;
-                document.getElementById('resultSubNote').textContent =
-                    `На стенку ${netArea.toFixed(2)} м² (с запасом ${reservePct}%) в ${coats} сл. при среднем расходе ~0.12 л/м² за слой.`;
+                title = 'Сколько нужно краски';
+                mainLabel = 'Примерный объём краски (в литрах):';
+                mainValue = `≈ ${liters.toFixed(1)} л`;
+                extra = '';
+                subNote = `Площадь ${netArea.toFixed(2)} м² (с запасом ${reservePct}%), ${coats} сл. (~0.12 л/м² за слой).`;
+            } else if (currentAction === 'prime') {
+                const coats = parseInt(document.getElementById('primeCoats').value, 10) || 1;
+                const liters = totalArea * 0.15 * coats;
+
+                title = 'Сколько нужно грунтовки';
+                mainLabel = 'Примерный объём грунтовки (в литрах):';
+                mainValue = `≈ ${liters.toFixed(1)} л`;
+                extra = '';
+                subNote = `Площадь ${netArea.toFixed(2)} м² (с запасом ${reservePct}%), ${coats} сл. (~0.15 л/м² за слой).`;
+            } else if (currentAction === 'wallpaper') {
+                const rollM2 = Math.max(1, parseFloat(document.getElementById('rollArea').value) || 5.3);
+                const rolls = Math.max(1, Math.ceil(totalArea / rollM2));
+                const gluePacks = Math.max(1, Math.ceil(totalArea / 25));
+
+                title = 'Сколько нужно обоев и клея';
+                mainLabel = 'Примерное количество рулонов:';
+                mainValue = `${rolls} рул.`;
+                extra = `Клей для обоев: ≈ ${gluePacks} пач. (на ~25 м² каждая)`;
+                subNote = `Стенка ${netArea.toFixed(2)} м² (с запасом ${reservePct}% = ${totalArea.toFixed(2)} м²), рулон ${rollM2} м².`;
+            } else if (currentAction === 'laminate') {
+                const underlayPacks = Math.max(1, Math.ceil(totalArea / 5));
+                const lamPacks = Math.max(1, Math.ceil(totalArea / 2.1));
+
+                title = 'Сколько нужно ламината и подложки';
+                mainLabel = 'Площадь ламината с запасом:';
+                mainValue = `≈ ${totalArea.toFixed(2)} м²`;
+                extra = `Ламинат: ≈ ${lamPacks} уп. (~2.1 м²) • Подложка: ≈ ${underlayPacks} уп. (5 м²)`;
+                subNote = `Пол ${netArea.toFixed(2)} м² + запас ${reservePct}% на подрезку.`;
+            } else if (currentAction === 'linoleum') {
+                title = 'Сколько нужно линолеума';
+                mainLabel = 'Площадь с запасом:';
+                mainValue = `≈ ${totalArea.toFixed(2)} м²`;
+                extra = '';
+                subNote = `Пол ${netArea.toFixed(2)} м² + запас ${reservePct}% на подгон и подрезку.`;
+            } else if (currentAction === 'tile') {
+                const glueKg = totalArea * 4.2;
+                const glueBags25 = Math.max(1, Math.ceil(glueKg / 25));
+                const groutKg = totalArea * 0.35;
+
+                title = 'Сколько нужно для плитки';
+                mainLabel = 'Площадь плитки с запасом:';
+                mainValue = `≈ ${totalArea.toFixed(2)} м²`;
+                extra = `Клей: ≈ ${glueKg.toFixed(1)} кг (${glueBags25} мешк. по 25 кг) • Затирка: ≈ ${groutKg.toFixed(1)} кг`;
+                subNote = `Площадь ${netArea.toFixed(2)} м² + запас ${reservePct}%.`;
+            } else if (currentAction === 'panels') {
+                const glueTubes = Math.max(1, Math.ceil(totalArea / 4.5));
+
+                title = 'Сколько нужно панелей';
+                mainLabel = 'Площадь панелей с запасом:';
+                mainValue = `≈ ${totalArea.toFixed(2)} м²`;
+                extra = `Монтажный клей / крепёж: ≈ ${glueTubes} шт.`;
+                subNote = `Площадь ${netArea.toFixed(2)} м² + запас ${reservePct}%.`;
+            } else if (currentAction === 'drywall') {
+                const sheets = Math.max(1, Math.ceil(totalArea / 3.0));
+
+                title = 'Сколько нужно гипсокартона';
+                mainLabel = 'Примерное количество листов (3 м²):';
+                mainValue = `${sheets} лист.`;
+                extra = `Площадь с запасом: ${totalArea.toFixed(2)} м²`;
+                subNote = `Стенка ${netArea.toFixed(2)} м² + запас ${reservePct}%. Плюс профили и саморезы.`;
+            } else if (currentAction === 'insulate') {
+                const glueKg = totalArea * 5.0;
+                const glueBags25 = Math.max(1, Math.ceil(glueKg / 25));
+                const meshRolls = Math.max(1, Math.ceil((totalArea * 1.1) / 50));
+
+                title = 'Сколько нужно для утепления';
+                mainLabel = 'Площадь утеплителя с запасом:';
+                mainValue = `≈ ${totalArea.toFixed(2)} м²`;
+                extra = `Клей: ≈ ${glueKg.toFixed(1)} кг (${glueBags25} мешк. по 25 кг) • Сетка: ${meshRolls} рул.`;
+                subNote = `Стенка ${netArea.toFixed(2)} м² + запас ${reservePct}%.`;
             }
+
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMainLabel').textContent = mainLabel;
+            document.getElementById('resultMainValue').textContent = mainValue;
+            document.getElementById('resultExtra').textContent = extra;
+            document.getElementById('resultSubNote').textContent = subNote;
         }
 
         function copyResult() {
+            const badge = document.getElementById('headerBadge').textContent;
             const title = document.getElementById('resultTitle').textContent;
             const val = document.getElementById('resultMainValue').textContent;
+            const extra = document.getElementById('resultExtra').textContent;
             const note = document.getElementById('resultSubNote').textContent;
-            const text = `${title}: ${val}
-${note}`;
+            const parts = [`[${badge}] ${title}: ${val}`];
+            if (extra) parts.push(extra);
+            if (note) parts.push(note);
 
+            const text = parts.join('\n');
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text);
             } else {
@@ -222,7 +559,10 @@ ${note}`;
             setTimeout(() => { btn.textContent = oldText; }, 1800);
         }
 
-        calculateWall();
+        renderOpenings();
+        renderActions();
+        showActionOption(currentAction);
+        calculate();
     </script>
 </body>
 </html>
