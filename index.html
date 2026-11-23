@@ -3,30 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СтройСмета — Умный калькулятор ремонта и расхода материалов</title>
-    <meta name="description" content="Бесплатный строительный калькулятор ремонта: точный расчёт штукатурки, шпаклёвки, грунтовки, краски, обоев, плитки и стяжки с учётом материала стен (газобетон, кирпич, ракушняк, бетон).">
+    <title>Калькулятор стенки — расчёт штукатурки, покраски и материалов</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
-            background-color: #f4f6f9;
-            color: #1e293b;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .option-card {
-            transition: all 0.18s ease;
-        }
-        .option-card:hover {
-            transform: translateY(-2px);
-        }
-        .option-card.active {
+        .action-btn.active {
             border-color: #ea580c;
             background-color: #fff7ed;
-            box-shadow: 0 4px 14px rgba(234, 88, 12, 0.14);
-        }
-        .option-card.active .card-icon {
-            background-color: #ea580c;
-            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.12);
         }
         input[type="number"]::-webkit-inner-spin-button {
             opacity: 1;
@@ -36,1096 +24,205 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- ШАПКА -->
-    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white text-lg font-black shadow">
-                    <i class="fa-solid fa-trowel-bricks"></i>
-                </div>
-                <div>
-                    <div class="font-extrabold text-lg tracking-tight leading-none" data-i18n="brandName">СтройСмета</div>
-                    <div class="text-[11px] text-slate-400 mt-0.5" data-i18n="brandSub">Калькулятор материалов по технологии работ</div>
-                </div>
+    <header class="bg-slate-900 text-white py-5 px-4 border-b border-slate-800">
+        <div class="max-w-3xl mx-auto flex items-center justify-between gap-3">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight">Калькулятор стенки</h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Введите размер стенки и выберите, что хотите сделать</p>
             </div>
-
-            <div class="flex items-center gap-2">
-                <span class="hidden sm:inline text-xs text-slate-400 mr-1" data-i18n="langLabel">Язык:</span>
-                <div class="bg-slate-800 p-1 rounded-xl border border-slate-700 flex text-xs font-bold">
-                    <button type="button" id="btnLangRu" onclick="setLanguage('ru')" class="px-3 py-1.5 rounded-lg bg-orange-600 text-white transition cursor-pointer">RU</button>
-                    <button type="button" id="btnLangUa" onclick="setLanguage('ua')" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition cursor-pointer">UA</button>
-                </div>
+            <div class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-orange-400 border border-slate-700">
+                Стена
             </div>
         </div>
     </header>
 
-    <!-- ПЕРВЫЙ ЭКРАН -->
-    <section class="bg-gradient-to-b from-slate-900 to-slate-800 text-white py-10 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-300 text-xs font-semibold mb-3">
-                <i class="fa-solid fa-helmet-safety"></i>
-                <span data-i18n="heroBadge">Расчёт «пирога» материалов от чернового основания до финиша</span>
+    <!-- ОСНОВНОЙ БЛОК -->
+    <main class="max-w-3xl mx-auto w-full px-4 py-6 flex-1 space-y-6">
+
+        <!-- ШАГ 1: РАЗМЕР СТЕНКИ -->
+        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between gap-2 mb-4">
+                <h2 class="text-base sm:text-lg font-extrabold text-slate-900">1. Размер стенки</h2>
+                <button type="button" onclick="resetWall()" class="text-xs font-bold text-orange-600 hover:underline cursor-pointer">
+                    Сбросить
+                </button>
             </div>
-            <h1 class="text-2xl sm:text-4xl font-black tracking-tight mb-3" data-i18n="heroTitle">
-                Строительный калькулятор ремонта и расхода материалов
-            </h1>
-            <p class="text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed" data-i18n="heroDesc">
-                Выберите поверхность, укажите материал основания (газобетон, кирпич, ракушняк, бетон или гипсокартон) и желаемый результат — калькулятор сам подберёт нужные слои, грунтовку, сетку, смеси и выдаст готовую смету закупки.
-            </p>
-        </div>
-    </section>
 
-    <!-- ОСНОВНОЙ КАЛЬКУЛЯТОР -->
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-            <!-- ЛЕВАЯ КОЛОНКА: ШАГИ НАСТРОЙКИ (7 колонок) -->
-            <div class="lg:col-span-7 space-y-6">
-
-                <!-- ШАГ 1: ПОВЕРХНОСТЬ -->
-                <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2.5 mb-4">
-                        <span class="w-7 h-7 rounded-lg bg-slate-900 text-white text-xs font-extrabold flex items-center justify-center">1</span>
-                        <h2 class="text-lg font-extrabold text-slate-900" data-i18n="step1Title">Что будем делать? (Поверхность)</h2>
-                    </div>
-
-                    <div id="surfaceGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="wallWidth" class="block text-xs font-bold text-slate-600 mb-1.5">Ширина / длина стенки (м)</label>
+                    <input type="number" id="wallWidth" value="4.0" min="0.1" step="0.1" oninput="calculateWall()"
+                        class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
                 </div>
-
-                <!-- ШАГ 2: МАТЕРИАЛ ОСНОВАНИЯ -->
-                <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between gap-2 mb-4">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-slate-900 text-white text-xs font-extrabold flex items-center justify-center">2</span>
-                            <h2 class="text-lg font-extrabold text-slate-900" data-i18n="step2Title">Из чего сделано основание?</h2>
-                        </div>
-                    </div>
-
-                    <div id="baseGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-
-                    <div id="baseTechNote" class="mt-4 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5 leading-relaxed">
-                        <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 text-sm"></i>
-                        <span id="baseTechNoteText"></span>
-                    </div>
+                <div>
+                    <label for="wallHeight" class="block text-xs font-bold text-slate-600 mb-1.5">Высота стенки (м)</label>
+                    <input type="number" id="wallHeight" value="2.7" min="0.1" step="0.05" oninput="calculateWall()"
+                        class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
                 </div>
-
-                <!-- ШАГ 3: ЖЕЛАЕМЫЙ РЕЗУЛЬТАТ -->
-                <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2.5 mb-4">
-                        <span class="w-7 h-7 rounded-lg bg-slate-900 text-white text-xs font-extrabold flex items-center justify-center">3</span>
-                        <h2 class="text-lg font-extrabold text-slate-900" data-i18n="step3Title">Какой результат нужен?</h2>
-                    </div>
-
-                    <div id="goalGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-                </div>
-
-                <!-- ШАГ 4: РАЗМЕРЫ И ПАРАМЕТРЫ -->
-                <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-slate-900 text-white text-xs font-extrabold flex items-center justify-center">4</span>
-                            <h2 class="text-lg font-extrabold text-slate-900" data-i18n="step4Title">Размеры и запас</h2>
-                        </div>
-                        <button type="button" onclick="resetDefaults()" class="text-xs font-bold text-orange-600 hover:underline cursor-pointer" data-i18n="resetBtn">
-                            Сбросить размеры
-                        </button>
-                    </div>
-
-                    <!-- Поля размеров для Стен / Пола / Потолка -->
-                    <div id="roomDimensionsBox" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblLength">Длина комнаты (м)</label>
-                            <input type="number" id="inpLength" value="4.5" min="0.1" step="0.1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblWidth">Ширина комнаты (м)</label>
-                            <input type="number" id="inpWidth" value="3.2" min="0.1" step="0.1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                        <div id="heightFieldWrap">
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblHeight">Высота потолка (м)</label>
-                            <input type="number" id="inpHeight" value="2.7" min="0.1" step="0.05" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                    </div>
-
-                    <!-- Вычет окон и дверей (только для стен) -->
-                    <div id="openingsDeductionBox" class="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-4">
-                        <div class="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-3" data-i18n="deductTitle">
-                            Вычет проёмов (окна и двери)
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1" data-i18n="lblDoorsCount">Кол-во дверей (стандарт 0.9×2.0 м)</label>
-                                <input type="number" id="inpDoorsCount" value="1" min="0" max="20" step="1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1" data-i18n="lblWindowsCount">Кол-во окон (стандарт 1.4×1.4 м)</label>
-                                <input type="number" id="inpWindowsCount" value="1" min="0" max="20" step="1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Поля размеров для ПРОЁМА (откосов) -->
-                    <div id="openingDimensionsBox" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblOpenHeight">Высота проёма (м)</label>
-                            <input type="number" id="inpOpenHeight" value="2.05" min="0.1" step="0.05" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblOpenWidth">Ширина проёма (м)</label>
-                            <input type="number" id="inpOpenWidth" value="0.9" min="0.1" step="0.05" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblOpenDepth">Глубина откоса / толщина стены (см)</label>
-                            <input type="number" id="inpOpenDepth" value="25" min="1" step="1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblOpenCount">Количество одинаковых проёмов</label>
-                            <input type="number" id="inpOpenCount" value="1" min="1" max="50" step="1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                        </div>
-                    </div>
-
-                    <!-- Дополнительные параметры: толщина слоя и запас -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div id="layerThicknessWrap">
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblLayerMm">Средняя толщина выравнивания (мм)</label>
-                            <input type="number" id="inpLayerMm" value="12" min="1" max="150" step="1" oninput="calculate()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                            <div class="text-[11px] text-slate-400 mt-1" data-i18n="hintLayerAuto">Подставляется автоматически под тип стены, можно изменить вручную</div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="lblReserve">Запас на подрезку и потери (%)</label>
-                            <select id="inpReserve" onchange="calculate()" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
-                                <option value="0">0%</option>
-                                <option value="5">5%</option>
-                                <option value="10" selected>10% (рекомендуется)</option>
-                                <option value="15">15% (сложная геометрия)</option>
-                            </select>
-                        </div>
-                    </div>
+                <div>
+                    <label for="wallReserve" class="block text-xs font-bold text-slate-600 mb-1.5">Запас на потери (%)</label>
+                    <select id="wallReserve" onchange="calculateWall()"
+                        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+                        <option value="0">0%</option>
+                        <option value="5">5%</option>
+                        <option value="10" selected>10% (обычный запас)</option>
+                        <option value="15">15%</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- ПРАВАЯ КОЛОНКА: ИТОГОВАЯ СМЕТА И ПИРОГ МАТЕРИАЛОВ (5 колонок) -->
-            <div class="lg:col-span-5 lg:sticky lg:top-20 space-y-5">
-                <div class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-                        <div>
-                            <div class="text-xs uppercase tracking-wider text-orange-400 font-bold" data-i18n="resBadge">Технологическая карта</div>
-                            <h3 class="text-xl font-black mt-0.5" data-i18n="resTitle">Список закупки материалов</h3>
-                        </div>
-                        <div class="text-right bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700">
-                            <div class="text-[11px] text-slate-400" data-i18n="resAreaLbl">Чистая площадь</div>
-                            <div id="resNetArea" class="text-lg font-black text-orange-400">0 м²</div>
-                        </div>
-                    </div>
-
-                    <!-- Пошаговый пирог работ -->
-                    <div class="mb-4">
-                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="resOrderLbl">Порядок выполнения работ:</div>
-                        <div id="workStepsPills" class="flex flex-wrap gap-1.5"></div>
-                    </div>
-
-                    <!-- Карточки материалов с вводом цены -->
-                    <div id="materialsResultList" class="space-y-3 mb-5"></div>
-
-                    <!-- Итоговая сумма -->
-                    <div class="bg-slate-800/90 rounded-xl p-4 border border-slate-700 mb-4">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="text-sm font-bold text-white" data-i18n="resTotalMoneyLbl">Ориентировочная смета:</div>
-                                <div class="text-[11px] text-slate-400" data-i18n="resTotalMoneyHint">Укажите свои цены за упаковку в полях выше</div>
-                            </div>
-                            <div id="resTotalCost" class="text-2xl font-black text-amber-400">0 ₴</div>
-                        </div>
-                    </div>
-
-                    <!-- Кнопка копирования -->
-                    <button type="button" id="copyBtn" onclick="copyEstimate()" class="w-full py-3.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-sm shadow-lg shadow-orange-600/20 transition flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-regular fa-copy text-base"></i>
-                        <span id="copyBtnText" data-i18n="copyBtn">Скопировать список для магазина / мастера</span>
-                    </button>
-                </div>
+            <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm">
+                <span class="text-slate-500 font-semibold">Площадь стенки:</span>
+                <span id="areaDisplay" class="font-black text-slate-900">10.80 м²</span>
             </div>
-        </div>
+        </section>
 
-        <!-- ПОЛЕЗНАЯ ШПАРГАЛКА ДЛЯ ПОИСКОВИКОВ И ПОЛЬЗОВАТЕЛЕЙ -->
-        <section class="mt-14 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-4" data-i18n="guideTitle">
-                Почему тип основания критически важен при расчёте ремонта
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600 leading-relaxed">
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                    <h3 class="font-extrabold text-slate-900 mb-1.5" data-i18n="g1Title">Газобетон и ракушняк</h3>
-                    <p data-i18n="g1Text">Ячеистые и пористые блоки мгновенно вытягивают влагу из раствора. Если не прогрунтовать стену в 2 слоя глубокой грунтовкой и не утопить армирующую сетку, штукатурка пересохнет и пойдёт паутиной трещин.</p>
-                </div>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                    <h3 class="font-extrabold text-slate-900 mb-1.5" data-i18n="g2Title">Бетон и монолит</h3>
-                    <p data-i18n="g2Text">Гладкий бетон почти не впитывает воду. Обычная жидкая грунтовка создаст на нём скользкую плёнку. Здесь обязателен Бетоноконтакт с кварцевым песком, который создаёт шершавую «наждачку» для сцепления.</p>
-                </div>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                    <h3 class="font-extrabold text-slate-900 mb-1.5" data-i18n="g3Title">Кирпич и гипсокартон</h3>
-                    <p data-i18n="g3Text">Кирпичная кладка требует выравнивания швов слоем 15–20 мм. А вот гипсокартон штукатурить нельзя — на нём армируют стыки серпянкой со специальной шпаклёвкой, после чего наносят финишный слой.</p>
-                </div>
+        <!-- ШАГ 2: ЧТО ХОТИМ СДЕЛАТЬ СО СТЕНКОЙ -->
+        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200">
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 mb-4">2. Что делаем со стенкой?</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <button type="button" id="btnPlaster" onclick="selectAction('plaster')"
+                    class="action-btn active text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer">
+                    <div class="font-extrabold text-sm sm:text-base text-slate-900">Поштукатурить</div>
+                    <div class="text-xs text-slate-500 mt-1">Выровнять стенку штукатурным раствором</div>
+                </button>
+
+                <button type="button" id="btnPaint" onclick="selectAction('paint')"
+                    class="action-btn text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer">
+                    <div class="font-extrabold text-sm sm:text-base text-slate-900">Покрасить</div>
+                    <div class="text-xs text-slate-500 mt-1">Покрыть стенку краской в 2 слоя</div>
+                </button>
             </div>
+
+            <!-- Дополнительный параметр под выбранное действие -->
+            <div id="plasterOptions" class="mt-4 pt-4 border-t border-slate-100">
+                <label for="plasterMm" class="block text-xs font-bold text-slate-600 mb-1.5">Примерная толщина слоя штукатурки (мм)</label>
+                <input type="number" id="plasterMm" value="10" min="1" max="100" step="1" oninput="calculateWall()"
+                    class="w-full sm:w-56 rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+            </div>
+
+            <div id="paintOptions" class="hidden mt-4 pt-4 border-t border-slate-100">
+                <label for="paintCoats" class="block text-xs font-bold text-slate-600 mb-1.5">Количество слоёв краски</label>
+                <select id="paintCoats" onchange="calculateWall()"
+                    class="w-full sm:w-56 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 focus:border-orange-500 focus:outline-none">
+                    <option value="1">1 слой</option>
+                    <option value="2" selected>2 слоя (стандарт)</option>
+                    <option value="3">3 слоя</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- ШАГ 3: РЕЗУЛЬТАТ -->
+        <section class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-lg border border-slate-800">
+            <div class="text-xs uppercase tracking-wider font-bold text-orange-400 mb-1">Результат расчёта</div>
+            <h2 id="resultTitle" class="text-xl sm:text-2xl font-black mb-4">Сколько нужно штукатурки</h2>
+
+            <div class="bg-slate-800/90 rounded-xl p-4 sm:p-5 border border-slate-700 mb-4">
+                <div class="text-xs text-slate-400 mb-1" id="resultMainLabel">Примерный объём раствора:</div>
+                <div id="resultMainValue" class="text-3xl sm:text-4xl font-black text-orange-400">0 л</div>
+                <div id="resultSubNote" class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed"></div>
+            </div>
+
+            <button type="button" id="copyResultBtn" onclick="copyResult()"
+                class="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-sm transition cursor-pointer">
+                Скопировать результат
+            </button>
         </section>
     </main>
 
-    <!-- ФУТЕР -->
-    <footer class="bg-slate-900 text-slate-400 text-xs py-6 px-4 mt-12 border-t border-slate-800">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div data-i18n="footerCopy">© 2026 СтройСмета — Инженерный калькулятор расхода строительных материалов</div>
-            <div data-i18n="footerNote">Расчёты основаны на средних строительных нормах расхода смесей</div>
-        </div>
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 px-4 mt-8 border-t border-slate-800 text-center">
+        Калькулятор стенки — быстрый ориентировочный расчёт материалов
     </footer>
 
     <script>
-        let currentLang = 'ru';
-        let state = {
-            surface: 'walls',
-            base: 'aerated',
-            goal: 'paint'
-        };
+        let currentAction = 'plaster';
 
-        const I18N = {
-            ru: {
-                brandName: 'СтройСмета',
-                brandSub: 'Калькулятор материалов по технологии работ',
-                langLabel: 'Язык:',
-                heroBadge: 'Расчёт «пирога» материалов от чернового основания до финиша',
-                heroTitle: 'Строительный калькулятор ремонта и расхода материалов',
-                heroDesc: 'Выберите поверхность, укажите материал основания (газобетон, кирпич, ракушняк, бетон или гипсокартон) и желаемый результат — калькулятор сам подберёт нужные слои, грунтовку, сетку, смеси и выдаст готовую смету закупки.',
-                step1Title: 'Что будем делать? (Поверхность)',
-                step2Title: 'Из чего сделано основание?',
-                step3Title: 'Какой результат нужен?',
-                step4Title: 'Размеры и запас',
-                resetBtn: 'Сбросить размеры',
-                lblLength: 'Длина комнаты (м)',
-                lblWidth: 'Ширина комнаты (м)',
-                lblHeight: 'Высота потолка (м)',
-                deductTitle: 'Вычет проёмов (окна и двери)',
-                lblDoorsCount: 'Кол-во дверей (стандарт 0.9×2.0 м)',
-                lblWindowsCount: 'Кол-во окон (стандарт 1.4×1.4 м)',
-                lblOpenHeight: 'Высота проёма (м)',
-                lblOpenWidth: 'Ширина проёма (м)',
-                lblOpenDepth: 'Глубина откоса / толщина стены (см)',
-                lblOpenCount: 'Количество одинаковых проёмов',
-                lblLayerMm: 'Средняя толщина выравнивания (мм)',
-                hintLayerAuto: 'Подставляется автоматически под тип стены, можно изменить вручную',
-                lblReserve: 'Запас на подрезку и потери (%)',
-                resBadge: 'Технологическая карта',
-                resTitle: 'Список закупки материалов',
-                resAreaLbl: 'Чистая площадь',
-                resOrderLbl: 'Порядок выполнения работ:',
-                resTotalMoneyLbl: 'Ориентировочная смета:',
-                resTotalMoneyHint: 'Укажите свои цены за упаковку в полях выше',
-                copyBtn: 'Скопировать список для магазина / мастера',
-                copiedBtn: 'Смета скопирована в буфер!',
-                pricePlaceholder: 'Цена за шт.',
-                guideTitle: 'Почему тип основания критически важен при расчёте ремонта',
-                g1Title: 'Газобетон и ракушняк',
-                g1Text: 'Ячеистые и пористые блоки мгновенно вытягивают влагу из раствора. Если не прогрунтовать стену в 2 слоя глубокой грунтовкой и не утопить армирующую сетку, штукатурка пересохнет и пойдёт паутиной трещин.',
-                g2Title: 'Бетон и монолит',
-                g2Text: 'Гладкий бетон почти не впитывает воду. Обычная жидкая грунтовка создаст на нём скользкую плёнку. Здесь обязателен Бетоноконтакт с кварцевым песком, который создаёт шершавую «наждачку» для сцепления.',
-                g3Title: 'Кирпич и гипсокартон',
-                g3Text: 'Кирпичная кладка требует выравнивания швов слоем 15–20 мм. А вот гипсокартон штукатурить нельзя — на нём армируют стыки серпянкой со специальной шпаклёвкой, после чего наносят финишный слой.',
-                footerCopy: '© 2026 СтройСмета — Инженерный калькулятор расхода строительных материалов',
-                footerNote: 'Расчёты основаны на средних строительных нормах расхода смесей',
-                surfaces: {
-                    walls: { title: 'Стены', sub: 'Комната по периметру' },
-                    ceiling: { title: 'Потолок', sub: 'Перекрытие сверху' },
-                    floor: { title: 'Пол', sub: 'Основание снизу' },
-                    opening: { title: 'Проём / Откосы', sub: 'Дверь, окно, арка' }
-                },
-                bases: {
-                    aerated: {
-                        title: 'Газобетон / Пеноблок',
-                        sub: 'Пористый блок, сильно впитывает влагу',
-                        note: 'Технология для газобетона: обязательна грунтовка глубокого проникновения в 2 слоя и армирующая стеклосетка под штукатурку, иначе появятся усадочные трещины.'
-                    },
-                    brick: {
-                        title: 'Кирпич (красный / силикатный)',
-                        sub: 'Кладка со швами и перепадами',
-                        note: 'Технология для кирпича: средний слой штукатурки 15–20 мм для перекрытия кладочных швов, предварительное обеспыливание и универсальная грунтовка.'
-                    },
-                    stone: {
-                        title: 'Ракушняк / Природный камень',
-                        sub: 'Глубокие поры и неровная геометрия',
-                        note: 'Технология для ракушняка/каменю: повышенный расход грунтовки и толстый выравнивающий слой штукатурки (от 25 мм) по штукатурной сетке.'
-                    },
-                    concrete: {
-                        title: 'Бетон / Монолитная плита',
-                        sub: 'Гладкое невпитывающее основание',
-                        note: 'Технология для бетона: обычная грунтовка не впитается — обязательно наносится Бетоноконтакт с кварцевым песком для надёжного сцепления.'
-                    },
-                    drywall: {
-                        title: 'Гипсокартон (ГКЛ)',
-                        sub: 'Ровные листы, без мокрой штукатурки',
-                        note: 'Технология для гипсокартона: толстая штукатурка не нужна! Армируем стыки листов лентой-серпянкой со шпаклёвкой для швов, затем наносим финишную шпаклёвку.'
-                    },
-                    plastered: {
-                        title: 'Уже оштукатуренная поверхность',
-                        sub: 'Черновое выравнивание уже сделано',
-                        note: 'Технология по готовой штукатурке: пропускаем черновой слой — грунтуем основание, наносим финишную шпаклёвку и переходим к чистовой отделке.'
-                    },
-                    floorSlab: {
-                        title: 'Черновая плита перекрытия',
-                        sub: 'Бетонное основание с перепадами',
-                        note: 'Технология для чернового пола: обеспыливание, грунтовка и устройство выравнивающей цементно-песчаной стяжки (рекомендуется от 30–40 мм).'
-                    },
-                    floorScreed: {
-                        title: 'Готовая стяжка пола',
-                        sub: 'Основание выровнено, нужна финишная база',
-                        note: 'Технология по готовой стяжке: при необходимости тонкий наливной пол (ровнитель) либо сразу укладка подложки и чистового напольного покрытия.'
-                    }
-                },
-                goals: {
-                    roughOnly: { title: 'Только черновая штукатурка', sub: 'Выровнять стены по маякам под дальнейший ремонт' },
-                    wallpaper: { title: 'Подготовка и поклейка обоев', sub: 'Штукатурка + шпаклёвка + клей + обои' },
-                    paint: { title: 'Подготовка и покраска (в 2 слоя)', sub: 'Идеально гладкая поверхность + краска' },
-                    tile: { title: 'Укладка керамической плитки', sub: 'Выравнивание + плиточный клей + плитка + затирка' },
-                    screedOnly: { title: 'Черновая стяжка пола', sub: 'Выравнивание плиты цементно-песчаной смесью' },
-                    laminate: { title: 'Укладка ламината / паркетной доски', sub: 'Наливной пол (при необходимости) + подложка + ламинат' },
-                    floorTile: { title: 'Укладка напольной плитки / керамогранита', sub: 'Грунтовка + усиленный клей + плитка + затирка' }
-                }
-            },
-            ua: {
-                brandName: 'БудКошторис',
-                brandSub: 'Калькулятор матеріалів за технологією робіт',
-                langLabel: 'Мова:',
-                heroBadge: 'Розрахунок «пирога» матеріалів від чорнової основи до фінішу',
-                heroTitle: 'Будівельний калькулятор ремонту та витрат матеріалів',
-                heroDesc: 'Оберіть поверхню, вкажіть матеріал основи (газобетон, цегла, ракушняк, бетон або гіпсокартон) та бажаний результат — калькулятор сам підбере потрібні шари, ґрунтовку, сітку, суміші та сформує готовий список закупівлі.',
-                step1Title: 'Що будемо робити? (Поверхня)',
-                step2Title: 'З чого зроблена основа?',
-                step3Title: 'Який результат потрібен?',
-                step4Title: 'Розміри та запас',
-                resetBtn: 'Скинути розміри',
-                lblLength: 'Довжина кімнати (м)',
-                lblWidth: 'Ширина кімнати (м)',
-                lblHeight: 'Висота стелі (м)',
-                deductTitle: 'Віднімання прорізів (вікна та двері)',
-                lblDoorsCount: 'Кількість дверей (стандарт 0.9×2.0 м)',
-                lblWindowsCount: 'Кількість вікон (стандарт 1.4×1.4 м)',
-                lblOpenHeight: 'Висота прорізу (м)',
-                lblOpenWidth: 'Ширина прорізу (м)',
-                lblOpenDepth: 'Глибина укосу / товщина стіни (см)',
-                lblOpenCount: 'Кількість однакових прорізів',
-                lblLayerMm: 'Середня товщина вирівнювання (мм)',
-                hintLayerAuto: 'Підставляється автоматично під тип стіни, можна змінити вручну',
-                lblReserve: 'Запас на підрізку та втрати (%)',
-                resBadge: 'Технологічна карта',
-                resTitle: 'Список закупівлі матеріалів',
-                resAreaLbl: 'Чиста площа',
-                resOrderLbl: 'Порядок виконання робіт:',
-                resTotalMoneyLbl: 'Орієнтовний кошторис:',
-                resTotalMoneyHint: 'Вкажіть свої ціни за упаковку у полях вище',
-                copyBtn: 'Скопіювати список для магазину / майстра',
-                copiedBtn: 'Кошторис скопійовано в буфер!',
-                pricePlaceholder: 'Ціна за шт.',
-                guideTitle: 'Чому тип основи критично важливий при розрахунку ремонту',
-                g1Title: 'Газобетон та ракушняк',
-                g1Text: 'Пористі блоки миттєво витягують вологу з розчину. Якщо не проґрунтувати стіну в 2 шари глибокою ґрунтовкою і не втопити армуючу сітку, штукатурка пересохне та піде павутиною тріщин.',
-                g2Title: 'Бетон та моноліт',
-                g2Text: 'Гладкий бетон майже не вбирає воду. Звичайна рідка ґрунтовка створить на ньому слизьку плівку. Тут обов’язковий Бетоноконтакт із кварцовим піском для надійного зчеплення.',
-                g3Title: 'Цегла та гіпсокартон',
-                g3Text: 'Цегляна кладка потребує вирівнювання швів шаром 15–20 мм. А от гіпсокартон штукатурити не можна — на ньому армують стики серпянкою зі шпаклівкою для швів, після чого наносять фінішний шар.',
-                footerCopy: '© 2026 БудКошторис — Інженерний калькулятор витрат будівельних матеріалів',
-                footerNote: 'Розрахунки базуються на середніх будівельних нормах витрат сумішей',
-                surfaces: {
-                    walls: { title: 'Стіни', sub: 'Кімната по периметру' },
-                    ceiling: { title: 'Стеля', sub: 'Перекриття зверху' },
-                    floor: { title: 'Підлога', sub: 'Основа знизу' },
-                    opening: { title: 'Проріз / Укоси', sub: 'Двері, вікно, арка' }
-                },
-                bases: {
-                    aerated: {
-                        title: 'Газобетон / Піноблок',
-                        sub: 'Пористий блок, сильно вбирає вологу',
-                        note: 'Технологія для газобетону: обов’язкова ґрунтовка глибокого проникнення у 2 шари та армуюча склосітка під штукатурку, інакше з’являться усадкові тріщини.'
-                    },
-                    brick: {
-                        title: 'Цегла (червона / силікатна)',
-                        sub: 'Кладка зі швами та перепадами',
-                        note: 'Технологія для цегли: середній шар штукатурки 15–20 мм для перекриття швів, попереднє знепилення та універсальна ґрунтовка.'
-                    },
-                    stone: {
-                        title: 'Ракушняк / Природний камінь',
-                        sub: 'Глибокі пори та нерівна геометрія',
-                        note: 'Технологія для ракушняка/каменю: підвищена витрата ґрунтовки та товстий вирівнюючий шар штукатурки (від 25 мм) по штукатурній сітці.'
-                    },
-                    concrete: {
-                        title: 'Бетон / Монолітна плита',
-                        sub: 'Гладка невбираюча основа',
-                        note: 'Технологія для бетону: звичайна ґрунтовка не вбереться — обов’язково наноситься Бетоноконтакт із кварцовим піском для надійної адгезії.'
-                    },
-                    drywall: {
-                        title: 'Гіпсокартон (ГКЛ)',
-                        sub: 'Рівні листи, без мокрої штукатурки',
-                        note: 'Технологія для гіпсокартону: товста штукатурка не потрібна! Армуємо стики листів стрічкою-серпянкою зі шпаклівкою для швів, потім наносимо фінішну шпаклівку.'
-                    },
-                    plastered: {
-                        title: 'Вже оштукатурена поверхня',
-                        sub: 'Чорнове вирівнювання вже зроблено',
-                        note: 'Технологія по готовій штукатурці: пропускаємо чорновий шар — ґрунтуємо основу, наносимо фінішну шпаклівку та переходимо до чистового оздоблення.'
-                    },
-                    floorSlab: {
-                        title: 'Чорнова плита перекриття',
-                        sub: 'Бетонна основа з перепадами',
-                        note: 'Технологія для чорнової підлоги: знепилення, ґрунтовка та влаштування вирівнюючої цементно-піщаної стяжки (рекомендується від 30–40 мм).'
-                    },
-                    floorScreed: {
-                        title: 'Готова стяжка підлоги',
-                        sub: 'Основа вирівняна, потрібна фінішна база',
-                        note: 'Технологія по готовій стяжці: за потреби тонкий наливний пол (рівняч) або одразу укладання підкладки та чистового покриття.'
-                    }
-                },
-                goals: {
-                    roughOnly: { title: 'Тільки чорнова штукатурка', sub: 'Вирівняти стіни по маяках під подальший ремонт' },
-                    wallpaper: { title: 'Підготовка та поклейка шпалер', sub: 'Штукатурка + шпаклівка + клей + шпалери' },
-                    paint: { title: 'Підготовка та фарбування (у 2 шари)', sub: 'Ідеально гладка поверхня + фарба' },
-                    tile: { title: 'Укладання керамічної плитки', sub: 'Вирівнювання + плитковий клей + плитка + затирка' },
-                    screedOnly: { title: 'Чорнова стяжка підлоги', sub: 'Вирівнювання плити цементно-піщаною сумішшю' },
-                    laminate: { title: 'Укладання ламінату / паркетної дошки', sub: 'Наливна підлога (за потреби) + підкладка + ламінат' },
-                    floorTile: { title: 'Укладання підлогової плитки / керамограніту', sub: 'Ґрунтовка + посилений клей + плитка + затирка' }
-                }
-            }
-        };
+        function selectAction(action) {
+            currentAction = action;
+            document.getElementById('btnPlaster').className = action === 'plaster'
+                ? 'action-btn active text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer'
+                : 'action-btn text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer';
+            document.getElementById('btnPaint').className = action === 'paint'
+                ? 'action-btn active text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer'
+                : 'action-btn text-left p-4 rounded-xl border-2 border-slate-200 bg-white transition cursor-pointer';
 
-        const SURFACE_CONFIG = {
-            walls: {
-                icon: 'fa-border-all',
-                bases: ['aerated', 'brick', 'stone', 'concrete', 'drywall', 'plastered'],
-                goals: ['roughOnly', 'wallpaper', 'paint', 'tile']
-            },
-            ceiling: {
-                icon: 'fa-arrow-up-from-bracket',
-                bases: ['concrete', 'drywall', 'plastered'],
-                goals: ['paint', 'wallpaper']
-            },
-            floor: {
-                icon: 'fa-layer-group',
-                bases: ['floorSlab', 'floorScreed'],
-                goals: ['screedOnly', 'laminate', 'floorTile']
-            },
-            opening: {
-                icon: 'fa-door-open',
-                bases: ['aerated', 'brick', 'stone', 'concrete', 'drywall', 'plastered'],
-                goals: ['paint', 'wallpaper', 'roughOnly', 'tile']
-            }
-        };
+            document.getElementById('plasterOptions').classList.toggle('hidden', action !== 'plaster');
+            document.getElementById('paintOptions').classList.toggle('hidden', action !== 'paint');
 
-        const DEFAULT_LAYERS_MM = {
-            aerated: 12,
-            brick: 18,
-            stone: 28,
-            concrete: 8,
-            drywall: 2,
-            plastered: 2,
-            floorSlab: 40,
-            floorScreed: 5
-        };
-
-        let unitPrices = {};
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.documentElement.lang = lang === 'ua' ? 'uk' : 'ru';
-            document.getElementById('btnLangRu').className = lang === 'ru'
-                ? 'px-3 py-1.5 rounded-lg bg-orange-600 text-white transition cursor-pointer'
-                : 'px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition cursor-pointer';
-            document.getElementById('btnLangUa').className = lang === 'ua'
-                ? 'px-3 py-1.5 rounded-lg bg-orange-600 text-white transition cursor-pointer'
-                : 'px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition cursor-pointer';
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (I18N[lang][key]) {
-                    el.textContent = I18N[lang][key];
-                }
-            });
-
-            renderOptions();
-            calculate();
+            calculateWall();
         }
 
-        function selectSurface(surf) {
-            state.surface = surf;
-            const cfg = SURFACE_CONFIG[surf];
-            if (!cfg.bases.includes(state.base)) {
-                state.base = cfg.bases[0];
-                document.getElementById('inpLayerMm').value = DEFAULT_LAYERS_MM[state.base] || 10;
-            }
-            if (!cfg.goals.includes(state.goal)) {
-                state.goal = cfg.goals[0];
-            }
-            updateDimensionVisibility();
-            renderOptions();
-            calculate();
+        function resetWall() {
+            document.getElementById('wallWidth').value = 4.0;
+            document.getElementById('wallHeight').value = 2.7;
+            document.getElementById('wallReserve').value = 10;
+            document.getElementById('plasterMm').value = 10;
+            document.getElementById('paintCoats').value = 2;
+            calculateWall();
         }
 
-        function selectBase(base) {
-            state.base = base;
-            document.getElementById('inpLayerMm').value = DEFAULT_LAYERS_MM[base] || 10;
-            renderOptions();
-            calculate();
-        }
+        function calculateWall() {
+            const w = Math.max(0.1, parseFloat(document.getElementById('wallWidth').value) || 0);
+            const h = Math.max(0.1, parseFloat(document.getElementById('wallHeight').value) || 0);
+            const reservePct = parseFloat(document.getElementById('wallReserve').value) || 0;
 
-        function selectGoal(goal) {
-            state.goal = goal;
-            renderOptions();
-            calculate();
-        }
+            const netArea = w * h;
+            const totalArea = netArea * (1 + reservePct / 100);
 
-        function updateDimensionVisibility() {
-            const roomBox = document.getElementById('roomDimensionsBox');
-            const heightWrap = document.getElementById('heightFieldWrap');
-            const deductBox = document.getElementById('openingsDeductionBox');
-            const openBox = document.getElementById('openingDimensionsBox');
+            document.getElementById('areaDisplay').textContent = `${netArea.toFixed(2)} м²`;
 
-            if (state.surface === 'opening') {
-                roomBox.classList.add('hidden');
-                deductBox.classList.add('hidden');
-                openBox.classList.remove('hidden');
+            if (currentAction === 'plaster') {
+                const mm = Math.max(1, parseFloat(document.getElementById('plasterMm').value) || 10);
+                // Объём слоя в литрах: площадь (м²) * толщина (м) * 1000 л/м³ = площадь * мм
+                const liters = totalArea * mm;
+                // Ориентировочный вес сухой смеси (~1.1 кг на 1 мм на 1 м²)
+                const kg = totalArea * mm * 1.1;
+                const bags30 = Math.max(1, Math.ceil(kg / 30));
+
+                document.getElementById('resultTitle').textContent = 'Сколько нужно штукатурки';
+                document.getElementById('resultMainLabel').textContent = 'Примерный объём штукатурки (в литрах):';
+                document.getElementById('resultMainValue').textContent = `≈ ${liters.toFixed(1)} л`;
+                document.getElementById('resultSubNote').textContent =
+                    `На стенку ${netArea.toFixed(2)} м² (с запасом ${reservePct}%) при слое ${mm} мм: около ${kg.toFixed(1)} кг сухой смеси (≈ ${bags30} мешк. по 30 кг).`;
             } else {
-                roomBox.classList.remove('hidden');
-                openBox.classList.add('hidden');
-                if (state.surface === 'walls') {
-                    heightWrap.classList.remove('hidden');
-                    deductBox.classList.remove('hidden');
-                } else {
-                    heightWrap.classList.add('hidden');
-                    deductBox.classList.add('hidden');
-                }
+                const coats = parseInt(document.getElementById('paintCoats').value, 10) || 2;
+                // Средний расход краски ~0.12 л/м² за один слой
+                const liters = totalArea * 0.12 * coats;
+
+                document.getElementById('resultTitle').textContent = 'Сколько нужно краски';
+                document.getElementById('resultMainLabel').textContent = 'Примерный объём краски (в литрах):';
+                document.getElementById('resultMainValue').textContent = `≈ ${liters.toFixed(1)} л`;
+                document.getElementById('resultSubNote').textContent =
+                    `На стенку ${netArea.toFixed(2)} м² (с запасом ${reservePct}%) в ${coats} сл. при среднем расходе ~0.12 л/м² за слой.`;
             }
         }
 
-        function renderOptions() {
-            const t = I18N[currentLang];
+        function copyResult() {
+            const title = document.getElementById('resultTitle').textContent;
+            const val = document.getElementById('resultMainValue').textContent;
+            const note = document.getElementById('resultSubNote').textContent;
+            const text = `${title}: ${val}
+${note}`;
 
-            const surfGrid = document.getElementById('surfaceGrid');
-            surfGrid.innerHTML = Object.keys(SURFACE_CONFIG).map(key => {
-                const isActive = state.surface === key;
-                return `
-                    <button type="button" onclick="selectSurface('${key}')" class="option-card ${isActive ? 'active' : ''} text-left p-3.5 rounded-xl border border-slate-200 bg-white cursor-pointer flex flex-col justify-between">
-                        <div class="card-icon w-9 h-9 rounded-lg ${isActive ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center mb-2.5 text-sm">
-                            <i class="fa-solid ${SURFACE_CONFIG[key].icon}"></i>
-                        </div>
-                        <div>
-                            <div class="font-extrabold text-sm text-slate-900">${t.surfaces[key].title}</div>
-                            <div class="text-[11px] text-slate-500 mt-0.5 leading-tight">${t.surfaces[key].sub}</div>
-                        </div>
-                    </button>
-                `;
-            }).join('');
-
-            const allowedBases = SURFACE_CONFIG[state.surface].bases;
-            const baseGrid = document.getElementById('baseGrid');
-            baseGrid.innerHTML = allowedBases.map(key => {
-                const isActive = state.base === key;
-                return `
-                    <button type="button" onclick="selectBase('${key}')" class="option-card ${isActive ? 'active' : ''} text-left p-3.5 rounded-xl border border-slate-200 bg-white cursor-pointer">
-                        <div class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
-                            <span>${t.bases[key].title}</span>
-                            ${isActive ? '<i class="fa-solid fa-circle-check text-orange-600"></i>' : ''}
-                        </div>
-                        <div class="text-xs text-slate-500 mt-1">${t.bases[key].sub}</div>
-                    </button>
-                `;
-            }).join('');
-
-            document.getElementById('baseTechNoteText').textContent = t.bases[state.base].note;
-
-            const allowedGoals = SURFACE_CONFIG[state.surface].goals;
-            const goalGrid = document.getElementById('goalGrid');
-            goalGrid.innerHTML = allowedGoals.map(key => {
-                const isActive = state.goal === key;
-                return `
-                    <button type="button" onclick="selectGoal('${key}')" class="option-card ${isActive ? 'active' : ''} text-left p-3.5 rounded-xl border border-slate-200 bg-white cursor-pointer">
-                        <div class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
-                            <span>${t.goals[key].title}</span>
-                            ${isActive ? '<i class="fa-solid fa-circle-check text-orange-600"></i>' : ''}
-                        </div>
-                        <div class="text-xs text-slate-500 mt-1">${t.goals[key].sub}</div>
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function resetDefaults() {
-            document.getElementById('inpLength').value = 4.5;
-            document.getElementById('inpWidth').value = 3.2;
-            document.getElementById('inpHeight').value = 2.7;
-            document.getElementById('inpDoorsCount').value = 1;
-            document.getElementById('inpWindowsCount').value = 1;
-            document.getElementById('inpOpenHeight').value = 2.05;
-            document.getElementById('inpOpenWidth').value = 0.9;
-            document.getElementById('inpOpenDepth').value = 25;
-            document.getElementById('inpOpenCount').value = 1;
-            document.getElementById('inpReserve').value = 10;
-            document.getElementById('inpLayerMm').value = DEFAULT_LAYERS_MM[state.base] || 10;
-            calculate();
-        }
-
-        function getNetArea() {
-            if (state.surface === 'opening') {
-                const h = Math.max(0.1, parseFloat(document.getElementById('inpOpenHeight').value) || 0);
-                const w = Math.max(0.1, parseFloat(document.getElementById('inpOpenWidth').value) || 0);
-                const dCm = Math.max(1, parseFloat(document.getElementById('inpOpenDepth').value) || 0);
-                const cnt = Math.max(1, parseInt(document.getElementById('inpOpenCount').value, 10) || 1);
-                const perimeter = (h * 2) + w;
-                return perimeter * (dCm / 100) * cnt;
-            }
-
-            const l = Math.max(0.1, parseFloat(document.getElementById('inpLength').value) || 0);
-            const w = Math.max(0.1, parseFloat(document.getElementById('inpWidth').value) || 0);
-
-            if (state.surface === 'ceiling' || state.surface === 'floor') {
-                return l * w;
-            }
-
-            const h = Math.max(0.1, parseFloat(document.getElementById('inpHeight').value) || 0);
-            const doors = Math.max(0, parseInt(document.getElementById('inpDoorsCount').value, 10) || 0);
-            const windows = Math.max(0, parseInt(document.getElementById('inpWindowsCount').value, 10) || 0);
-
-            const gross = 2 * (l + w) * h;
-            const deduct = (doors * 1.8) + (windows * 1.96);
-            return Math.max(0.5, gross - deduct);
-        }
-
-        function buildMaterials(areaWithReserve, layerMm) {
-            const isUa = currentLang === 'ua';
-            const materials = [];
-            const steps = [];
-
-            const addMat = (id, name, desc, rawQty, rawUnit, packSize, packUnitName) => {
-                const packs = Math.max(1, Math.ceil(rawQty / packSize));
-                materials.push({
-                    id,
-                    name,
-                    desc,
-                    rawQty: rawQty.toFixed(1),
-                    rawUnit,
-                    packs,
-                    packUnitName
-                });
-            };
-
-            const addStep = (label) => steps.push(label);
-
-            if (state.surface === 'floor') {
-                addStep(isUa ? '1. Очищення та ґрунтування' : '1. Очистка и грунтовка');
-                addMat(
-                    'primer_floor',
-                    isUa ? 'Ґрунтовка глибокого проникнення' : 'Грунтовка глубокого проникновения',
-                    isUa ? 'Зміцнення основи перед заливкою' : 'Укрепление основания перед заливкой',
-                    areaWithReserve * 0.2,
-                    isUa ? 'л' : 'л',
-                    10,
-                    isUa ? 'каністр (10 л)' : 'канистр (10 л)'
-                );
-
-                if (state.base === 'floorSlab' || state.goal === 'screedOnly') {
-                    addStep(isUa ? '2. Цементно-піщана стяжка' : '2. Цементно-песчаная стяжка');
-                    const screedKg = areaWithReserve * layerMm * 1.8;
-                    addMat(
-                        'screed',
-                        isUa ? 'Суміш для стяжки підлоги (М150/М200)' : 'Смесь для стяжки пола (М150/М200)',
-                        isUa ? `Шар ${layerMm} мм (витрата ~1.8 кг/м² на 1 мм)` : `Слой ${layerMm} мм (расход ~1.8 кг/м² на 1 мм)`,
-                        screedKg,
-                        'кг',
-                        25,
-                        isUa ? 'мішків (25 кг)' : 'мешков (25 кг)'
-                    );
-                }
-
-                if (state.goal === 'laminate') {
-                    if (state.base === 'floorScreed' && layerMm > 2) {
-                        addStep(isUa ? '2. Фінішний наливний пол' : '2. Финишный наливной пол');
-                        addMat(
-                            'self_level',
-                            isUa ? 'Самовирівнююча суміш (наливна підлога)' : 'Самовыравнивающаяся смесь (наливной пол)',
-                            isUa ? `Тонке вирівнювання ${layerMm} мм` : `Тонкое выравнивание ${layerMm} мм`,
-                            areaWithReserve * layerMm * 1.5,
-                            'кг',
-                            25,
-                            isUa ? 'мішків (25 кг)' : 'мешков (25 кг)'
-                        );
-                    }
-                    addStep(isUa ? '3. Підкладка та ламінат' : '3. Подложка и ламинат');
-                    addMat(
-                        'underlay',
-                        isUa ? 'Підкладка під ламінат (3 мм)' : 'Подложка под ламинат (3 мм)',
-                        isUa ? 'Шумо- та теплоізоляція основи' : 'Шумо- и теплоизоляция основания',
-                        areaWithReserve,
-                        'м²',
-                        5,
-                        isUa ? 'упаковок (5 м²)' : 'упаковок (5 м²)'
-                    );
-                    addMat(
-                        'laminate',
-                        isUa ? 'Ламінат / паркетна дошка' : 'Ламинат / паркетная доска',
-                        isUa ? 'З урахуванням запасу на підрізку' : 'С учётом запаса на подрезку',
-                        areaWithReserve,
-                        'м²',
-                        2.1,
-                        isUa ? 'упаковок (~2.1 м²)' : 'упаковок (~2.1 м²)'
-                    );
-                }
-
-                if (state.goal === 'floorTile') {
-                    addStep(isUa ? '2. Укладання плитки та затирка' : '2. Укладка плитки и затирка');
-                    addMat(
-                        'tile_glue_floor',
-                        isUa ? 'Посилений клей для керамограніту' : 'Усиленный клей для керамогранита',
-                        isUa ? 'Витрата ~5 кг/м² під гребінку 10 мм' : 'Расход ~5 кг/м² под гребёнку 10 мм',
-                        areaWithReserve * 5,
-                        'кг',
-                        25,
-                        isUa ? 'мішків (25 кг)' : 'мешков (25 кг)'
-                    );
-                    addMat(
-                        'floor_tile',
-                        isUa ? 'Підлогова плитка / керамограніт' : 'Напольная плитка / керамогранит',
-                        isUa ? 'Площа з урахуванням підрізки' : 'Площадь с учётом подрезки',
-                        areaWithReserve,
-                        'м²',
-                        1.44,
-                        isUa ? 'упаковок (~1.44 м²)' : 'упаковок (~1.44 м²)'
-                    );
-                    addMat(
-                        'grout',
-                        isUa ? 'Затирка для міжплиткових швів' : 'Затирка для межплиточных швов',
-                        isUa ? 'Середня витрата ~0.4 кг/м²' : 'Средний расход ~0.4 кг/м²',
-                        areaWithReserve * 0.4,
-                        'кг',
-                        2,
-                        isUa ? 'упаковок (2 кг)' : 'упаковок (2 кг)'
-                    );
-                }
-
-                return { materials, steps };
-            }
-
-            if (state.base === 'concrete') {
-                addStep(isUa ? '1. Бетоноконтакт' : '1. Бетоноконтакт');
-                addMat(
-                    'betonokontakt',
-                    isUa ? 'Ґрунт Бетоноконтакт (із кварцовим піском)' : 'Грунт Бетоноконтакт (с кварцевым песком)',
-                    isUa ? 'Обов’язково для гладкого бетону (~0.3 кг/м²)' : 'Обязательно для гладкого бетона (~0.3 кг/м²)',
-                    areaWithReserve * 0.3,
-                    'кг',
-                    10,
-                    isUa ? 'відер (10 кг)' : 'вёдер (10 кг)'
-                );
-            } else if (state.base === 'aerated' || state.base === 'stone') {
-                addStep(isUa ? '1. Подвійне глибоке ґрунтування' : '1. Двойное глубокое грунтование');
-                addMat(
-                    'primer_deep',
-                    isUa ? 'Ґрунтовка глибокого проникнення (у 2 шари)' : 'Грунтовка глубокого проникновения (в 2 слоя)',
-                    isUa ? 'Підвищена витрата для пористих блоків (~0.35 л/м²)' : 'Повышенный расход для пористых блоков (~0.35 л/м²)',
-                    areaWithReserve * 0.35,
-                    'л',
-                    10,
-                    isUa ? 'каністр (10 л)' : 'канистр (10 л)'
-                );
-            } else {
-                addStep(isUa ? '1. Ґрунтування основи' : '1. Грунтование основания');
-                addMat(
-                    'primer_uni',
-                    isUa ? 'Ґрунтовка універсальна акрилова' : 'Грунтовка универсальная акриловая',
-                    isUa ? 'Знепилення та зміцнення (~0.18 л/м²)' : 'Обеспыливание и укрепление (~0.18 л/м²)',
-                    areaWithReserve * 0.18,
-                    'л',
-                    10,
-                    isUa ? 'каністр (10 л)' : 'канистр (10 л)'
-                );
-            }
-
-            if (state.base !== 'drywall' && state.base !== 'plastered') {
-                if (state.base === 'aerated' || state.base === 'stone' || state.surface === 'opening') {
-                    addStep(isUa ? '2. Армуюча сітка' : '2. Армирующая сетка');
-                    addMat(
-                        'mesh',
-                        isUa ? 'Сітка штукатурна скловолоконна (5×5 мм)' : 'Сетка штукатурная стекловолоконная (5×5 мм)',
-                        isUa ? 'Захист від тріщин на блоках та укосах (+10% на нахлест)' : 'Защита от трещин на блоках и откосах (+10% на нахлёст)',
-                        areaWithReserve * 1.1,
-                        'м²',
-                        50,
-                        isUa ? 'рулонів (50 м²)' : 'рулонов (50 м²)'
-                    );
-                }
-
-                addStep(isUa ? '3. Чорнова штукатурка' : '3. Черновая штукатурка');
-                const plasterRate = (state.goal === 'tile' || state.base === 'stone') ? 1.4 : 0.95;
-                const plasterName = (state.goal === 'tile' || state.base === 'stone')
-                    ? (isUa ? 'Штукатурка цементно-піщана / фасадна' : 'Штукатурка цементно-песчаная / фасадная')
-                    : (isUa ? 'Штукатурка гіпсова стартова (типу Rotband)' : 'Штукатурка гипсовая стартовая (типа Rotband)');
-
-                addMat(
-                    'plaster',
-                    plasterName,
-                    isUa ? `Шар ${layerMm} мм (витрата ~${plasterRate} кг/м² на 1 мм)` : `Слой ${layerMm} мм (расход ~${plasterRate} кг/м² на 1 мм)`,
-                    areaWithReserve * layerMm * plasterRate,
-                    'кг',
-                    30,
-                    isUa ? 'мішків (30 кг)' : 'мешков (30 кг)'
-                );
-            }
-
-            if (state.surface === 'opening') {
-                const h = Math.max(0.1, parseFloat(document.getElementById('inpOpenHeight').value) || 0);
-                const w = Math.max(0.1, parseFloat(document.getElementById('inpOpenWidth').value) || 0);
-                const cnt = Math.max(1, parseInt(document.getElementById('inpOpenCount').value, 10) || 1);
-                const cornerMeters = ((h * 2) + w) * cnt * 1.1;
-                addMat(
-                    'corner_profile',
-                    isUa ? 'Куточок перфорований штукатурний (3 м)' : 'Уголок перфорированный штукатурный (3 м)',
-                    isUa ? 'Для ідеально рівного зовнішнього кута укосу' : 'Для идеально ровного внешнего угла откоса',
-                    cornerMeters,
-                    'м.п.',
-                    3,
-                    isUa ? 'штук (по 3 м)' : 'штук (по 3 м)'
-                );
-            }
-
-            if (state.goal === 'roughOnly') {
-                return { materials, steps };
-            }
-
-            if (state.goal === 'tile') {
-                addStep(isUa ? '4. Укладання плитки та затирка' : '4. Укладка плитки и затирка');
-                addMat(
-                    'tile_glue_wall',
-                    isUa ? 'Клей для керамічної плитки' : 'Клей для керамической плитки',
-                    isUa ? 'Середня витрата ~4 кг/м²' : 'Средний расход ~4 кг/м²',
-                    areaWithReserve * 4,
-                    'кг',
-                    25,
-                    isUa ? 'мішків (25 кг)' : 'мешков (25 кг)'
-                );
-                addMat(
-                    'wall_tile',
-                    isUa ? 'Керамічна плитка настінна' : 'Керамическая плитка настенная',
-                    isUa ? 'З урахуванням запасу на підрізку' : 'С учётом запаса на подрезку',
-                    areaWithReserve,
-                    'м²',
-                    1.5,
-                    isUa ? 'упаковок (~1.5 м²)' : 'упаковок (~1.5 м²)'
-                );
-                addMat(
-                    'grout_wall',
-                    isUa ? 'Затирка для швів вологостійка' : 'Затирка для швов влагостойкая',
-                    isUa ? 'Витрата ~0.4 кг/м²' : 'Расход ~0.4 кг/м²',
-                    areaWithReserve * 0.4,
-                    'кг',
-                    2,
-                    isUa ? 'упаковок (2 кг)' : 'упаковок (2 кг)'
-                );
-                return { materials, steps };
-            }
-
-            if (state.base === 'drywall') {
-                addStep(isUa ? '2. Армування швів ГКЛ' : '2. Армирование швов ГКЛ');
-                addMat(
-                    'joint_putty',
-                    isUa ? 'Шпаклівка для швів ГКЛ (типу Fugen / Uniflott)' : 'Шпаклёвка для швов ГКЛ (типа Fugen / Uniflott)',
-                    isUa ? 'Закладення стиків та саморізів (~0.4 кг/м²)' : 'Заделка стыков и саморезов (~0.4 кг/м²)',
-                    areaWithReserve * 0.4,
-                    'кг',
-                    5,
-                    isUa ? 'мішків (5 кг)' : 'мешков (5 кг)'
-                );
-                addMat(
-                    'serpyanka',
-                    isUa ? 'Стрічка-серпянка армуюча (50 мм)' : 'Лента-серпянка армирующая (50 мм)',
-                    isUa ? 'Проклейка стиків листів гіпсокартону' : 'Проклейка стыков листов гипсокартона',
-                    areaWithReserve * 1.2,
-                    'м.п.',
-                    45,
-                    isUa ? 'рулонів (45 м)' : 'рулонов (45 м)'
-                );
-            }
-
-            const puttyLayers = state.goal === 'paint' ? 2 : 1;
-            const puttyKg = areaWithReserve * 1.2 * puttyLayers;
-            addStep(isUa ? `4. Фінішна шпаклівка (${puttyLayers} шар${puttyLayers > 1 ? 'и' : ''})` : `4. Финишная шпаклёвка (${puttyLayers} сло${puttyLayers > 1 ? 'я' : 'й'})`);
-            addMat(
-                'finish_putty',
-                isUa ? `Шпаклівка фінішна (${puttyLayers} шар${puttyLayers > 1 ? 'и' : ''})` : `Шпаклёвка финишная (${puttyLayers} сло${puttyLayers > 1 ? 'я' : 'й'})`,
-                state.goal === 'paint'
-                    ? (isUa ? 'Під фарбування потрібне вигладжування у 2 шари' : 'Под покраску нужно выглаживание в 2 слоя')
-                    : (isUa ? 'Під шпалери достатньо 1–2 тонких шарів' : 'Под обои достаточно 1–2 тонких слоёв'),
-                puttyKg,
-                'кг',
-                20,
-                isUa ? 'мішків (20 кг)' : 'мешков (20 кг)'
-            );
-
-            if (state.goal === 'wallpaper') {
-                addStep(isUa ? '5. Ґрунт + клей + шпалери' : '5. Грунт + клей + обои');
-                addMat(
-                    'wallpaper_glue',
-                    isUa ? 'Клей для шпалер (флізелінових / вінілових)' : 'Клей для обоев (флизелиновых / виниловых)',
-                    isUa ? '1 пачка розрахована приблизно на 25–30 м²' : '1 пачка рассчитана примерно на 25–30 м²',
-                    areaWithReserve,
-                    'м²',
-                    25,
-                    isUa ? 'пачок' : 'пачек'
-                );
-                addMat(
-                    'wallpaper_rolls',
-                    isUa ? 'Шпалери (рулон 1.06 × 10.05 м)' : 'Обои (рулон 1.06 × 10.05 м)',
-                    isUa ? 'Корисна площа рулону з підгонкою малюнка ~8.5 м²' : 'Полезная площадь рулона с подгонкой рисунка ~8.5 м²',
-                    areaWithReserve,
-                    'м²',
-                    8.5,
-                    isUa ? 'рулонів (метрових)' : 'рулонов (метровых)'
-                );
-            }
-
-            if (state.goal === 'paint') {
-                addStep(isUa ? '5. Міжшаровий ґрунт + фарба (2 шари)' : '5. Межслойный грунт + краска (2 слоя)');
-                addMat(
-                    'paint_primer',
-                    isUa ? 'Ґрунтовка перед фарбуванням' : 'Грунтовка перед покраской',
-                    isUa ? 'Знижує витрату фарби та прибирає пил після шліфування' : 'Снижает расход краски и убирает пыль после шлифовки',
-                    areaWithReserve * 0.15,
-                    'л',
-                    5,
-                    isUa ? 'каністр (5 л)' : 'канистр (5 л)'
-                );
-                addMat(
-                    'interior_paint',
-                    isUa ? 'Інтер’єрна фарба (розрахунок на 2 шари)' : 'Интерьерная краска (расчёт на 2 слоя)',
-                    isUa ? 'Середня витрата у 2 шари ~0.25 л/м²' : 'Средний расход в 2 слоя ~0.25 л/м²',
-                    areaWithReserve * 0.25,
-                    'л',
-                    10,
-                    isUa ? 'відер (10 л)' : 'вёдер (10 л)'
-                );
-            }
-
-            return { materials, steps };
-        }
-
-        function calculate() {
-            const netArea = getNetArea();
-            const reservePct = parseFloat(document.getElementById('inpReserve').value) || 0;
-            const areaWithReserve = netArea * (1 + reservePct / 100);
-            const layerMm = Math.max(1, parseFloat(document.getElementById('inpLayerMm').value) || 10);
-
-            document.getElementById('resNetArea').textContent = `${netArea.toFixed(2)} м²`;
-
-            const { materials, steps } = buildMaterials(areaWithReserve, layerMm);
-
-            const stepsBox = document.getElementById('workStepsPills');
-            stepsBox.innerHTML = steps.map(s => `
-                <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200">${s}</span>
-            `).join('');
-
-            const listBox = document.getElementById('materialsResultList');
-            const ph = I18N[currentLang].pricePlaceholder;
-
-            listBox.innerHTML = materials.map(m => {
-                const savedPrice = unitPrices[m.id] || '';
-                return `
-                    <div class="p-3.5 rounded-xl bg-slate-800/75 border border-slate-700/90">
-                        <div class="flex justify-between items-start gap-3">
-                            <div>
-                                <div class="font-bold text-sm text-white leading-snug">${m.name}</div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">${m.desc}</div>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <div class="text-base font-black text-orange-400">${m.packs} ${m.packUnitName}</div>
-                                <div class="text-[11px] text-slate-400">≈ ${m.rawQty} ${m.rawUnit}</div>
-                            </div>
-                        </div>
-                        <div class="mt-2.5 pt-2.5 border-t border-slate-700/70 flex items-center justify-between gap-2">
-                            <span class="text-[11px] text-slate-400">${ph}:</span>
-                            <div class="flex items-center gap-1.5">
-                                <input type="number" min="0" step="1" value="${savedPrice}" placeholder="0"
-                                    oninput="updatePrice('${m.id}', this.value)"
-                                    class="w-24 rounded-lg bg-slate-900 border border-slate-600 px-2.5 py-1 text-right text-xs font-bold text-amber-400 focus:border-orange-500 focus:outline-none">
-                                <span class="text-xs text-slate-400 font-bold">₴</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            recalcTotalMoney(materials);
-        }
-
-        function updatePrice(matId, val) {
-            unitPrices[matId] = parseFloat(val) || 0;
-            const netArea = getNetArea();
-            const reservePct = parseFloat(document.getElementById('inpReserve').value) || 0;
-            const areaWithReserve = netArea * (1 + reservePct / 100);
-            const layerMm = Math.max(1, parseFloat(document.getElementById('inpLayerMm').value) || 10);
-            const { materials } = buildMaterials(areaWithReserve, layerMm);
-            recalcTotalMoney(materials);
-        }
-
-        function recalcTotalMoney(materials) {
-            let total = 0;
-            materials.forEach(m => {
-                const p = unitPrices[m.id] || 0;
-                total += p * m.packs;
-            });
-            document.getElementById('resTotalCost').textContent = `${Math.round(total).toLocaleString()} ₴`;
-        }
-
-        function copyEstimate() {
-            const t = I18N[currentLang];
-            const netArea = getNetArea();
-            const reservePct = parseFloat(document.getElementById('inpReserve').value) || 0;
-            const areaWithReserve = netArea * (1 + reservePct / 100);
-            const layerMm = Math.max(1, parseFloat(document.getElementById('inpLayerMm').value) || 10);
-            const { materials } = buildMaterials(areaWithReserve, layerMm);
-
-            let lines = [
-                `📋 ${t.brandName} — ${t.surfaces[state.surface].title}`,
-                `🧱 ${t.bases[state.base].title}`,
-                `🎯 ${t.goals[state.goal].title}`,
-                `📐 ${t.resAreaLbl}: ${netArea.toFixed(2)} м² (+${reservePct}%)`,
-                `-------------------------`
-            ];
-
-            let totalMoney = 0;
-            materials.forEach((m, idx) => {
-                const p = unitPrices[m.id] || 0;
-                const sumStr = p > 0 ? ` — ${Math.round(p * m.packs)} ₴` : '';
-                totalMoney += p * m.packs;
-                lines.push(`${idx + 1}. ${m.name}: ${m.packs} ${m.packUnitName} (~${m.rawQty} ${m.rawUnit})${sumStr}`);
-            });
-
-            if (totalMoney > 0) {
-                lines.push(`-------------------------`);
-                lines.push(`💰 ${t.resTotalMoneyLbl} ${Math.round(totalMoney).toLocaleString()} ₴`);
-            }
-
-            const textToCopy = lines.join('
-');
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(textToCopy);
+                navigator.clipboard.writeText(text);
             } else {
-                const tmp = document.createElement('textarea');
-                tmp.value = textToCopy;
-                document.body.appendChild(tmp);
-                tmp.select();
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
                 document.execCommand('copy');
-                document.body.removeChild(tmp);
+                document.body.removeChild(ta);
             }
 
-            const btnText = document.getElementById('copyBtnText');
-            btnText.textContent = t.copiedBtn;
-            setTimeout(() => {
-                btnText.textContent = t.copyBtn;
-            }, 2200);
+            const btn = document.getElementById('copyResultBtn');
+            const oldText = btn.textContent;
+            btn.textContent = 'Скопировано!';
+            setTimeout(() => { btn.textContent = oldText; }, 1800);
         }
 
-        updateDimensionVisibility();
-        renderOptions();
-        calculate();
+        calculateWall();
     </script>
 </body>
 </html>
